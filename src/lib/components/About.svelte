@@ -129,7 +129,7 @@
 	<Backdrop variant="about" />
 	<p class="sr-only">
 		Frontend, UI Engineering, Web Apps, Motion, Performance. Azhar Danica,
-		Frontend Developer, Indonesia, since 2018.
+		Frontend Developer, Indonesia, since 2023.
 	</p>
 	<div class="marquee" bind:this={marqueeEl}>
 		<div class="marquee__row" bind:this={row1El} aria-hidden="true">
@@ -159,7 +159,7 @@
 						class="marquee__sep">✦</span
 					>
 					<span>Indonesia</span><span class="marquee__sep">✦</span>
-					<span class="outline">Since 2018</span><span
+					<span class="outline">Since 2023</span><span
 						class="marquee__sep">✦</span
 					>
 				</div>

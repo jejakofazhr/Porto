@@ -7,7 +7,7 @@
 	import Footer from "#lib/components/Footer.svelte";
 
 	const DESCRIPTION =
-		"Azhar Danica Budi Zulfalillah is a frontend developer from Purwokerto, Indonesia, building fast, accessible and responsive websites and web apps since 2018.";
+		"Azhar Danica Budi Zulfalillah is a frontend developer from Purwokerto, Indonesia, building fast, accessible and responsive websites and web apps since 2023.";
 </script>
 
 <svelte:head>
