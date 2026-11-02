@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "portfolio",
-      "runtimeExecutable": "node",
-      "runtimeArgs": [".claude/serve.js"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
       "port": 5500
     }
   ]

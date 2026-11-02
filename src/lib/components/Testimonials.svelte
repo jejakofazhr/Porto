@@ -1,19 +1,19 @@
 <script lang="ts">
 	const quotes = [
 		{
-			quote: "“Azhar turned a tiny coffee cart into a brand people line up for. Every touchpoint, from cups to signage, suddenly felt like us.”",
+			quote: "“Azhar turned our slow, clunky shop into a store people actually enjoy using. Orders went up the week we launched.”",
 			initials: "AS",
 			name: "Ayu Setiawan",
 			role: "Founder, Kopi Senja",
 		},
 		{
-			quote: "“Rare mix of craft and clarity. Our app went from confusing to calm, and the design system Azhar left behind still saves us weeks.”",
+			quote: "“Rare mix of craft and clarity. Our app went from confusing to calm, and the component library Azhar left behind still saves us weeks.”",
 			initials: "DL",
 			name: "Daniel Lim",
 			role: "Head of Product, Lumen",
 		},
 		{
-			quote: "“The 3D work gave our launch a personality we couldn’t have found on our own. Playful, precise and delivered ahead of schedule.”",
+			quote: "“Our launch site felt alive, with 3D and motion everywhere, yet it loaded instantly on every phone we tried. Delivered ahead of schedule.”",
 			initials: "MR",
 			name: "Maya Rahman",
 			role: "Creative Lead, Orbit",

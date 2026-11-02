@@ -1,5 +1,41 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import Backdrop from "./Backdrop.svelte";
+
+	type Tool = { name: string; icon: string; invert?: boolean };
+
+	// Delete any line you don't use: the two rows, their order and speed adjust by themselves.
+	// Logos live in static/stack/<icon>.svg. `invert` turns black logos white on the dark page.
+	const STACK: Tool[] = [
+		// Languages
+		{ name: "HTML5", icon: "html5" },
+		{ name: "CSS3", icon: "css3" },
+		{ name: "JavaScript", icon: "javascript" },
+		{ name: "TypeScript", icon: "typescript" },
+		// Frameworks & libraries
+		{ name: "React", icon: "react" },
+		{ name: "Next.js", icon: "nextjs", invert: true },
+		{ name: "Svelte", icon: "svelte" },
+		{ name: "Motion", icon: "motion" },
+		// Styling
+		{ name: "Tailwind CSS", icon: "tailwindcss" },
+		{ name: "Material UI", icon: "materialui" },
+		// Data & backend
+		{ name: "Node.js", icon: "nodejs" },
+		{ name: "Supabase", icon: "supabase" },
+		// Workflow & deploy
+		{ name: "Git", icon: "git" },
+		{ name: "GitHub", icon: "github", invert: true },
+		{ name: "VS Code", icon: "vscode" },
+		{ name: "Figma", icon: "figma" },
+		{ name: "Vercel", icon: "vercel", invert: true },
+	];
+
+	// Two rows moving in opposite directions; ~3.5s per logo keeps the speed constant.
+	const half = Math.ceil(STACK.length / 2);
+	const STACK_ROWS = [STACK.slice(0, half), STACK.slice(half)].filter(
+		(r) => r.length,
+	);
 
 	let marqueeEl: HTMLElement | null = $state(null);
 	let row1El: HTMLElement | null = $state(null);
@@ -90,24 +126,24 @@
 </script>
 
 <section class="about" id="about">
-	<div
-		class="marquee"
-		bind:this={marqueeEl}
-		aria-label="Brand Identity, UI / UX, 3D Design, Motion. Azhar Danica, Graphic Designer, Indonesia, since 2018."
-	>
+	<Backdrop variant="about" />
+	<p class="sr-only">
+		Frontend, UI Engineering, Web Apps, Motion, Performance. Azhar Danica,
+		Frontend Developer, Indonesia, since 2018.
+	</p>
+	<div class="marquee" bind:this={marqueeEl}>
 		<div class="marquee__row" bind:this={row1El} aria-hidden="true">
 			<div class="marquee__track">
 				<div class="marquee__group">
-					<span>Brand Identity</span><span class="marquee__sep"
-						>✦</span
-					>
-					<span class="outline">UI / UX</span><span
+					<span>Frontend</span><span class="marquee__sep">✦</span>
+					<span class="outline">UI Engineering</span><span
 						class="marquee__sep">✦</span
 					>
-					<span>3D Design</span><span class="marquee__sep">✦</span>
+					<span>Web Apps</span><span class="marquee__sep">✦</span>
 					<span class="outline">Motion</span><span
 						class="marquee__sep">✦</span
 					>
+					<span>Performance</span><span class="marquee__sep">✦</span>
 				</div>
 			</div>
 		</div>
@@ -119,7 +155,7 @@
 			<div class="marquee__track">
 				<div class="marquee__group">
 					<span>Azhar Danica</span><span class="marquee__sep">✦</span>
-					<span class="outline">Graphic Designer</span><span
+					<span class="outline">Frontend Developer</span><span
 						class="marquee__sep">✦</span
 					>
 					<span>Indonesia</span><span class="marquee__sep">✦</span>
@@ -134,18 +170,57 @@
 	<div class="about__body container">
 		<p class="eyebrow">(01) About</p>
 		<p class="about__text">
-			I'm Azhar Danica, a multidisciplinary designer working out of
-			Somakaton. I build
-			<strong>identities people remember</strong>, interfaces that feel
-			effortless and 3D scenes with a sense of play, for studios and
-			startups across Asia and beyond.
+			I'm Azhar Danica, a frontend developer working out of Purwokerto. I
+			build <strong>interfaces people enjoy using</strong>: fast,
+			accessible and responsive websites and web apps, from pixel-perfect
+			landing pages to full product UIs, for studios and startups across
+			Asia and beyond.
 		</p>
 		<ul class="about__tags">
-			<li class="tag">Branding</li>
-			<li class="tag">Product Design</li>
-			<li class="tag">Blender / C4D</li>
-			<li class="tag">Figma</li>
-			<li class="tag">Art Direction</li>
+			<li class="tag">Responsive UI</li>
+			<li class="tag">Design Systems</li>
+			<li class="tag">Web Performance</li>
+			<li class="tag">Accessibility</li>
+			<li class="tag">Animation</li>
+			<li class="tag">SEO</li>
 		</ul>
+	</div>
+
+	<div class="container">
+		<p class="eyebrow stack__title">Tools I code with</p>
+	</div>
+	<div class="stack">
+		{#each STACK_ROWS as row, r (r)}
+			<div class="stack__row" class:stack__row--reverse={r === 1}>
+				<div
+					class="stack__track"
+					style="--duration: {row.length * 3.5}s"
+				>
+					<!-- Second copy makes the loop seamless; screen readers only get the first. -->
+					{#each [0, 1] as copy (copy)}
+						<ul
+							class="stack__list"
+							aria-hidden={copy === 1 ? "true" : undefined}
+						>
+							{#each row as tool (tool.name)}
+								<li
+									class="stack__item"
+									class:stack__item--invert={tool.invert}
+								>
+									<img
+										src="/stack/{tool.icon}.svg"
+										alt=""
+										width="30"
+										height="30"
+										loading="lazy"
+										decoding="async"
+									/>{tool.name}
+								</li>
+							{/each}
+						</ul>
+					{/each}
+				</div>
+			</div>
+		{/each}
 	</div>
 </section>

@@ -1,4 +1,9 @@
+<script lang="ts">
+	import Backdrop from "./Backdrop.svelte";
+</script>
+
 <footer class="footer" id="contact" data-nav="light">
+	<Backdrop variant="footer" />
 	<div class="container">
 		<p class="eyebrow">(04) Contact</p>
 		<h2 class="footer__title">
@@ -11,13 +16,17 @@
 
 		<div class="footer__grid">
 			<div>
-				<h3 class="footer__heading">Studio</h3>
-				<p>Somakaton, Indonesia<br />Working worldwide</p>
+				<h3 class="footer__heading">Based in</h3>
+				<p>Purwokerto, Indonesia<br />Working worldwide</p>
 			</div>
 			<div>
 				<h3 class="footer__heading">Social</h3>
 				<ul class="footer__list">
-					<li><a href="#contact">Instagram</a></li>
+					<li>
+						<a href="https://www.instagram.com/jejak.azhr/"
+							>Instagram</a
+						>
+					</li>
 					<li><a href="#contact">Dribbble</a></li>
 					<li><a href="#contact">Behance</a></li>
 					<li><a href="#contact">LinkedIn</a></li>
@@ -42,7 +51,7 @@
 
 		<div class="footer__bottom">
 			<span>© 2026 Azhar Dev</span>
-			<span>Designed in Indonesia</span>
+			<span>Built in Indonesia</span>
 		</div>
 	</div>
 
