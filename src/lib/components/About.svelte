@@ -2,7 +2,9 @@
 	import { onMount } from "svelte";
 	import Backdrop from "./Backdrop.svelte";
 
-	type Tool = { name: string; icon: string; invert?: boolean };
+	let { editor = false }: { editor?: boolean } = $props();
+
+	type Tool = { name: string; icon?: string; invert?: boolean };
 
 	// Delete any line you don't use: the two rows, their order and speed adjust by themselves.
 	// Logos live in static/stack/<icon>.svg. `invert` turns black logos white on the dark page.
@@ -31,24 +33,65 @@
 		{ name: "Vercel", icon: "vercel", invert: true },
 	];
 
+	// Editor & Photographer mode. No logo files for these yet, so they show as text.
+	const EDITOR_STACK: Tool[] = [
+		{ name: "Premiere Pro" },
+		{ name: "After Effects" },
+		{ name: "DaVinci Resolve" },
+		{ name: "CapCut" },
+		{ name: "Lightroom" },
+		{ name: "Photoshop" },
+		{ name: "Audition" },
+		{ name: "Figma", icon: "figma" },
+	];
+
 	// Two rows moving in opposite directions; ~3.5s per logo keeps the speed constant.
 	const half = Math.ceil(STACK.length / 2);
-	const STACK_ROWS = [STACK.slice(0, half), STACK.slice(half)].filter(
-		(r) => r.length,
+	// shortcut: editor tools fit one row only, split into two once the list has ~16 tools.
+	const STACK_ROWS = $derived(
+		editor
+			? [EDITOR_STACK]
+			: [STACK.slice(0, half), STACK.slice(half)].filter((r) => r.length),
 	);
+	// The short editor list is narrower than a wide screen, so it needs 4 copies (still 2 identical halves) to loop without a gap.
+	const copies = $derived(editor ? [0, 1, 2, 3] : [0, 1]);
+
+	const COPY = {
+		dev: {
+			row1: ["Frontend", "UI Engineering", "Web Apps", "Motion", "Performance"],
+			row2: ["Azhar Danica", "Frontend Developer", "Indonesia", "Since 2023"],
+			role: "a frontend developer",
+			build: "build",
+			strong: "interfaces people enjoy using",
+			rest: "fast, accessible and responsive websites and web apps, from pixel-perfect landing pages to full product UIs, for studios and startups across Asia and beyond.",
+			tags: ["Responsive UI", "Design Systems", "Web Performance", "Accessibility", "Animation", "SEO"],
+			tools: "Tools I code with",
+		},
+		editor: {
+			row1: ["Video Editing", "Photography", "Color Grading", "Motion", "Storytelling"],
+			row2: ["Azhar Danica", "Editor & Photographer", "Indonesia", "Since 2023"],
+			role: "a video editor and photographer",
+			build: "make",
+			strong: "pictures that hold attention",
+			rest: "edits with rhythm and story, color that sets the mood, and photos of people and places, for brands, events and creators across Asia and beyond.",
+			tags: ["Video Editing", "Color Grading", "Motion Graphics", "Portraits", "Event Coverage", "Short-form Content"],
+			tools: "Tools I edit with",
+		},
+	};
+	const c = $derived(editor ? COPY.editor : COPY.dev);
 
 	let marqueeEl: HTMLElement | null = $state(null);
-	let row1El: HTMLElement | null = $state(null);
-	let row2El: HTMLElement | null = $state(null);
 
 	onMount(() => {
 		const reduceMotion = window.matchMedia(
 			"(prefers-reduced-motion: reduce)",
 		).matches;
-		if (reduceMotion || !marqueeEl || !row1El || !row2El) return;
+		if (reduceMotion || !marqueeEl) return;
 
 		const MARQUEE_SPEED = 60;
-		const rowEls = [row1El, row2El];
+		const rowEls = Array.from(
+			marqueeEl.querySelectorAll<HTMLElement>(".marquee__row"),
+		);
 		const rows = rowEls.map((row) => {
 			const track = row.querySelector<HTMLElement>(".marquee__track")!;
 			const group = track.querySelector<HTMLElement>(".marquee__group")!;
@@ -127,94 +170,71 @@
 
 <section class="about" id="about">
 	<Backdrop variant="about" />
-	<p class="sr-only">
-		Frontend, UI Engineering, Web Apps, Motion, Performance. Azhar Danica,
-		Frontend Developer, Indonesia, since 2023.
-	</p>
+	<p class="sr-only">{c.row1.join(", ")}. {c.row2.join(", ")}.</p>
 	<div class="marquee" bind:this={marqueeEl}>
-		<div class="marquee__row" bind:this={row1El} aria-hidden="true">
-			<div class="marquee__track">
-				<div class="marquee__group">
-					<span>Frontend</span><span class="marquee__sep">✦</span>
-					<span class="outline">UI Engineering</span><span
-						class="marquee__sep">✦</span
-					>
-					<span>Web Apps</span><span class="marquee__sep">✦</span>
-					<span class="outline">Motion</span><span
-						class="marquee__sep">✦</span
-					>
-					<span>Performance</span><span class="marquee__sep">✦</span>
+		{#each [c.row1, c.row2] as words, r (r)}
+			<div
+				class="marquee__row"
+				class:marquee--reverse={r === 1}
+				aria-hidden="true"
+			>
+				<div class="marquee__track">
+					<div class="marquee__group">
+						{#each words as word, i (word)}
+							<span class:outline={i % 2 === 1}>{word}</span><span
+								class="marquee__sep">✦</span
+							>
+						{/each}
+					</div>
 				</div>
 			</div>
-		</div>
-		<div
-			class="marquee__row marquee--reverse"
-			bind:this={row2El}
-			aria-hidden="true"
-		>
-			<div class="marquee__track">
-				<div class="marquee__group">
-					<span>Azhar Danica</span><span class="marquee__sep">✦</span>
-					<span class="outline">Frontend Developer</span><span
-						class="marquee__sep">✦</span
-					>
-					<span>Indonesia</span><span class="marquee__sep">✦</span>
-					<span class="outline">Since 2023</span><span
-						class="marquee__sep">✦</span
-					>
-				</div>
-			</div>
-		</div>
+		{/each}
 	</div>
 
 	<div class="about__body container">
 		<p class="eyebrow">(01) About</p>
 		<p class="about__text">
-			I'm Azhar Danica, a frontend developer working out of Purwokerto. I
-			build <strong>interfaces people enjoy using</strong>: fast,
-			accessible and responsive websites and web apps, from pixel-perfect
-			landing pages to full product UIs, for studios and startups across
-			Asia and beyond.
+			I'm Azhar Danica, {c.role} working out of Purwokerto. I
+			{c.build} <strong>{c.strong}</strong>: {c.rest}
 		</p>
 		<ul class="about__tags">
-			<li class="tag">Responsive UI</li>
-			<li class="tag">Design Systems</li>
-			<li class="tag">Web Performance</li>
-			<li class="tag">Accessibility</li>
-			<li class="tag">Animation</li>
-			<li class="tag">SEO</li>
+			{#each c.tags as tag (tag)}
+				<li class="tag">{tag}</li>
+			{/each}
 		</ul>
 	</div>
 
 	<div class="container">
-		<p class="eyebrow stack__title">Tools I code with</p>
+		<p class="eyebrow stack__title">{c.tools}</p>
 	</div>
 	<div class="stack">
 		{#each STACK_ROWS as row, r (r)}
 			<div class="stack__row" class:stack__row--reverse={r === 1}>
 				<div
 					class="stack__track"
-					style="--duration: {row.length * 3.5}s"
+					style="--duration: {row.length * 3.5 * (copies.length / 2)}s"
 				>
 					<!-- Second copy makes the loop seamless; screen readers only get the first. -->
-					{#each [0, 1] as copy (copy)}
+					{#each copies as copy (copy)}
 						<ul
 							class="stack__list"
-							aria-hidden={copy === 1 ? "true" : undefined}
+							aria-hidden={copy > 0 ? "true" : undefined}
 						>
 							{#each row as tool (tool.name)}
 								<li
 									class="stack__item"
 									class:stack__item--invert={tool.invert}
 								>
-									<img
-										src="/stack/{tool.icon}.svg"
-										alt=""
-										width="30"
-										height="30"
-										loading="lazy"
-										decoding="async"
-									/>{tool.name}
+									{#if tool.icon}
+										<img
+											src="/stack/{tool.icon}.svg"
+											alt=""
+											width="30"
+											height="30"
+											loading="lazy"
+											decoding="async"
+										/>
+									{/if}{tool.name}
 								</li>
 							{/each}
 						</ul>

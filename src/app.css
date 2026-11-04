@@ -549,17 +549,44 @@ img {
   color: var(--muted);
 }
 
-.hero__card-tag {
+.hero__switch {
   flex: none;
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
-  background: var(--white);
-  color: var(--ink);
-  font-size: 1.3rem;
-  font-weight: 700;
+}
+
+.hero__switch-knob {
+  transition: transform 0.3s ease;
+}
+
+.hero--editor .hero__switch-knob {
+  transform: translateX(8px);
+}
+
+/* Mode switch: the card flips a little, the sections below fade back in. */
+.hero__card {
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hero--editor .hero__card {
+  transform: rotate(-1.5deg);
+}
+
+.hero__card-back {
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.5s ease;
+}
+
+.hero--editor .hero__card-back {
+  transform: rotate(-6deg);
+  background: rgba(79, 124, 255, 0.14);
+}
+
+.mode-swap {
+  animation: mode-swap 0.6s ease;
+}
+
+@keyframes mode-swap {
+  from {
+    opacity: 0;
+  }
 }
 
 @media (max-width: 899px) {
@@ -1155,16 +1182,6 @@ img {
   transform: rotate(-2deg);
 }
 
-/* Placeholder while a project has no real images: the project's own art,
-   shifted per slot so the three shots don't look identical. */
-.shot__ph {
-  position: absolute;
-  inset: 0;
-  background: var(--art);
-  transform: scale(calc(1 + var(--n, 0) * 0.35));
-  filter: hue-rotate(calc(var(--n, 0) * 12deg)) brightness(calc(1 - var(--n, 0) * 0.12));
-}
-
 /* ---- Info bar ---- */
 
 .project__info {
@@ -1218,7 +1235,7 @@ img {
   transform: translateX(-4px);
 }
 
-/* ---- Artwork (also used by the placeholders and the pop-up) ---- */
+/* ---- Artwork (card background, also used by the pop-up) ---- */
 
 .project--kopi {
   --art:
@@ -1342,10 +1359,18 @@ html:has(.modal[open]) {
 }
 
 .modal__main img,
+.modal__main video,
 .modal__thumb img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Show the whole frame in the pop-up: the work is mostly 9:16 or 16:9, not 4:3. */
+.modal__main img,
+.modal__main video {
+  object-fit: contain;
 }
 
 .modal__thumbs {
@@ -1781,7 +1806,14 @@ html:has(.modal[open]) {
     animation: none;
   }
 
-  .hero__img {
+  .mode-swap {
+    animation: none;
+  }
+
+  .hero__img,
+  .hero__card,
+  .hero__card-back,
+  .hero__switch-knob {
     transition: none;
   }
 

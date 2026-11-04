@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 
+	let { editor = false }: { editor?: boolean } = $props();
+
 	let navEl: HTMLElement | null = $state(null);
 	let isDark = $state(false);
 
@@ -47,7 +49,7 @@
 	class:nav--dark={isDark}
 	aria-label="Main"
 >
-	<a class="nav__logo" href="#hero"><b>Azhar</b> <span>Dev</span></a>
+	<a class="nav__logo" href="#hero"><b>Azhar</b> <span>{editor ? "Visual" : "Dev"}</span></a>
 	<ul class="nav__links">
 		<li><a href="#about">About</a></li>
 		<li><a href="#work">Work</a></li>

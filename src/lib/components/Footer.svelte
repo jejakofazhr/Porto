@@ -1,5 +1,8 @@
 <script lang="ts">
 	import Backdrop from "./Backdrop.svelte";
+
+	let { editor = false }: { editor?: boolean } = $props();
+	const brand = $derived(editor ? "Azhar Visual" : "Azhar Dev");
 </script>
 
 <footer class="footer" id="contact" data-nav="light">
@@ -50,10 +53,10 @@
 		</div>
 
 		<div class="footer__bottom">
-			<span>© 2026 Azhar Dev</span>
+			<span>© 2026 {brand}</span>
 			<span>Built in Indonesia</span>
 		</div>
 	</div>
 
-	<div class="footer__wordmark" aria-hidden="true">Azhar Dev</div>
+	<div class="footer__wordmark" aria-hidden="true">{brand}</div>
 </footer>

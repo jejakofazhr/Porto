@@ -8,13 +8,17 @@
 		cat: string;
 		year: string;
 		classModifier: string;
-		/** 2-3 images, e.g. ['/projects/kopi-1.webp', '/projects/kopi-2.webp']. Put the files in static/projects/. Empty = gradient placeholders. */
+		/** Base paths without size suffix: '/projects/event/1' serves 1-480.webp (cards, thumbs) and 1-1080.webp (pop-up, single-image cards). Cards show the first 3. At least one required. */
 		images: string[];
+		/** Optional MP4 shown in the pop-up instead of the gallery; `images` are then its stills for the card. */
+		video?: string;
 		/** Short description shown in the pop-up. */
 		desc: string;
 		/** Live site, Behance, Dribbble... Empty = no button. */
 		link: string;
 	};
+
+	let { editor = false }: { editor?: boolean } = $props();
 
 	let workEl: HTMLElement | null = $state(null);
 	let workTrackEl: HTMLElement | null = $state(null);
@@ -24,63 +28,111 @@
 	let active: Project | null = $state(null);
 	let shot = $state(0);
 
-	// Placeholder projects: replace images, desc and link with real ones.
-	const projects: Project[] = [
+	// Media lives in static/projects/<slug>/ (optimized from fix/).
+	const stills = (slug: string, n: number) => Array.from({ length: n }, (_, i) => `/projects/${slug}/${i + 1}`);
+
+	const devProjects: Project[] = [
 		{
 			num: '01',
-			title: 'Kopi Senja',
-			cat: 'E-commerce · Next.js',
-			year: '2025',
-			classModifier: 'project--kopi',
-			images: [],
-			desc: 'A warm, sunset-inspired online store for a small coffee brand: product pages, cart and checkout, built mobile-first and loading in under a second.',
+			title: 'MenjerBook',
+			cat: 'Booking platform · Web app',
+			year: '',
+			classModifier: 'project--lumen',
+			images: stills('menjerbook', 3),
+			desc: 'An online booking platform for villas, cabins and glamping around Menjer and Dieng: a mobile-first search and booking flow for guests, plus an admin panel for bookings, properties, units and pricing.',
 			link: ''
 		},
 		{
 			num: '02',
-			title: 'Lumen Bank',
-			cat: 'Web app · Dashboard',
+			title: 'SPMB SDIT Insan Mulia',
+			cat: 'School admission · Web app',
 			year: '2025',
-			classModifier: 'project--lumen',
-			images: [],
-			desc: 'A calmer banking dashboard. Onboarding, transfers and savings rebuilt as a React + TypeScript app on top of a reusable component library.',
-			link: ''
-		},
-		{
-			num: '03',
-			title: 'Pixel Pals',
-			cat: 'Interactive site · 3D',
-			year: '2024',
-			classModifier: 'project--pixel',
-			images: [],
-			desc: 'A playful launch site with 3D characters rendered in the browser and scroll-driven animations that stay smooth on mid-range phones.',
-			link: ''
-		},
-		{
-			num: '04',
-			title: 'Batik Now',
-			cat: 'Editorial site · CMS',
-			year: '2024',
-			classModifier: 'project--batik',
-			images: [],
-			desc: 'A magazine-style site on modern batik: headless CMS, bold editorial layouts and image-heavy pages that still pass Core Web Vitals.',
-			link: ''
-		},
-		{
-			num: '05',
-			title: 'Orbit OS',
-			cat: 'Marketing site · Vue',
-			year: '2023',
 			classModifier: 'project--orbit',
-			images: [],
-			desc: 'A fast marketing website and component library for a productivity tool, from Figma handoff to a responsive, accessible build.',
+			images: stills('spmb', 2),
+			desc: 'A new-student admission site for SDIT Insan Mulia Banyumas (2025/2026): a landing page plus an online registration form with student data and document uploads.',
 			link: ''
 		}
 	];
 
-	/** Real images, or three placeholder slots (null) while there are none. */
-	const shotsOf = (p: Project): (string | null)[] =>
-		p.images.length ? p.images.slice(0, 3) : [null, null, null];
+	// Editor & Photographer mode.
+	// Photos first, then videos. A video card shows its single cover still.
+	const editorProjects: Project[] = [
+		{
+			num: '01',
+			title: 'Sejala Photo',
+			cat: 'Portrait · Photography',
+			year: '',
+			classModifier: 'project--kopi',
+			images: stills('sejalaphoto', 6),
+			desc: 'Portrait and couple photography with natural expressions and a warm, consistent grade.',
+			link: ''
+		},
+		{
+			num: '02',
+			title: 'Jejak Cafein',
+			cat: 'Cafe · Photography',
+			year: '',
+			classModifier: 'project--batik',
+			images: stills('jejakcafein', 3),
+			desc: 'Cafe and interior photography with warm tones and clean layouts for social media.',
+			link: ''
+		},
+		{
+			num: '03',
+			title: 'Aesthetic Series',
+			cat: 'Photo edit · Vertical',
+			year: '',
+			classModifier: 'project--orbit',
+			images: stills('estetic', 3),
+			desc: 'A set of vertical photos edited for a soft, consistent aesthetic tone.',
+			link: ''
+		},
+		{
+			num: '04',
+			title: 'Event Coverage',
+			cat: 'Event · Photography',
+			year: '',
+			classModifier: 'project--kopi',
+			images: stills('event', 3),
+			desc: 'Event photography finished as vertical, social-ready frames.',
+			link: ''
+		},
+		{
+			num: '05',
+			title: 'HIV Awareness Animation',
+			cat: 'Motion graphics · Animation',
+			year: '',
+			classModifier: 'project--lumen',
+			images: stills('animasi', 1),
+			video: '/projects/animasi/video.mp4',
+			desc: 'An animated explainer walking through the stages of HIV infection, with simple shapes, bold type and clear pacing.',
+			link: ''
+		},
+		{
+			num: '06',
+			title: 'FTC UMP 2024 Bumper',
+			cat: 'Event bumper · Motion',
+			year: '2024',
+			classModifier: 'project--pixel',
+			images: stills('bumper', 1),
+			video: '/projects/bumper/video.mp4',
+			desc: 'A 10-second opening bumper for FTC UMP 2024, built around the event mascots and its neon city look.',
+			link: ''
+		},
+		{
+			num: '07',
+			title: 'Divisi Produksi',
+			cat: 'Short video · Edit',
+			year: '',
+			classModifier: 'project--lumen',
+			images: stills('short-video', 1),
+			video: '/projects/short-video/video.mp4',
+			desc: 'A vertical short video introducing the production division, edited for social media.',
+			link: ''
+		}
+	];
+
+	const projects = $derived(editor ? editorProjects : devProjects);
 
 	function openProject(p: Project) {
 		active = p;
@@ -149,12 +201,8 @@
 	});
 </script>
 
-{#snippet picture(src: string | null, n: number, alt: string, lazy: boolean)}
-	{#if src}
-		<img {src} {alt} loading={lazy ? 'lazy' : 'eager'} decoding="async" />
-	{:else}
-		<span class="shot__ph" style="--n: {n}"></span>
-	{/if}
+{#snippet picture(src: string, alt: string, lazy: boolean, w: 480 | 1080 = 480)}
+	<img src="{src}-{w}.webp" {alt} loading={lazy ? 'lazy' : 'eager'} decoding="async" />
 {/snippet}
 
 <section class="work" id="work" data-nav="light" bind:this={workEl}>
@@ -162,23 +210,24 @@
 		<Backdrop variant="work" />
 		<div class="work__head container">
 			<p class="eyebrow">(02) Selected Work</p>
-			<p class="work__counter"><span>{currentNum}</span> / 05</p>
+			<p class="work__counter"><span>{currentNum}</span> / {String(projects.length).padStart(2, '0')}</p>
 		</div>
 
 		<div class="work__track" bind:this={workTrackEl}>
 			<div class="work__intro">
-				<h2 class="work__title">Selected<br />Projects</h2>
+				<h2 class="work__title">Selected<br />{editor ? 'Edits & Shots' : 'Projects'}</h2>
 				<p>Scroll to explore a few favourites. Tap a card for the story behind it.</p>
 			</div>
 
 			{#each projects as project (project.num)}
-				{@const shots = shotsOf(project)}
+				{@const shots = project.images.slice(0, 3)}
 				<article class="project {project.classModifier}">
 					<div class="project__art"></div>
 					<div class="project__shots" data-count={shots.length}>
 						{#each shots as src, n (n)}
 							<div class="shot shot--{n + 1}">
-								{@render picture(src, n, '', true)}
+								<!-- A lone shot fills the whole card, so 480px would be upscaled and blurry. -->
+								{@render picture(src, '', true, shots.length === 1 ? 1080 : 480)}
 							</div>
 						{/each}
 					</div>
@@ -216,7 +265,7 @@
 		onclose={() => (active = null)}
 	>
 		{#if active}
-			{@const shots = shotsOf(active)}
+			{@const shots = active.images}
 			<div class="modal__panel {active.classModifier}">
 				<button
 					class="modal__close"
@@ -227,9 +276,21 @@
 
 				<div class="modal__gallery">
 					<div class="modal__main">
-						{@render picture(shots[shot], shot, `${active.title}, image ${shot + 1}`, false)}
+						{#if active.video}
+							<!-- svelte-ignore a11y_media_has_caption (no caption files for these edits yet) -->
+							<video
+								src={active.video}
+								poster="{active.images[0]}-1080.webp"
+								controls
+								playsinline
+								preload="none"
+								aria-label={active.title}
+							></video>
+						{:else}
+							{@render picture(shots[shot], `${active.title}, image ${shot + 1}`, false, 1080)}
+						{/if}
 					</div>
-					{#if shots.length > 1}
+					{#if !active.video && shots.length > 1}
 						<div class="modal__thumbs">
 							{#each shots as src, n (n)}
 								<button
@@ -240,7 +301,7 @@
 									aria-pressed={n === shot}
 									onclick={() => (shot = n)}
 								>
-									{@render picture(src, n, '', false)}
+									{@render picture(src, '', false)}
 								</button>
 							{/each}
 						</div>
@@ -248,7 +309,7 @@
 				</div>
 
 				<div class="modal__body">
-					<p class="eyebrow">{active.num} · {active.year}</p>
+					<p class="eyebrow">{active.num}{active.year ? ` · ${active.year}` : ''}</p>
 					<h3 class="modal__title" id="modal-title">{active.title}</h3>
 					<p class="modal__cat">{active.cat}</p>
 					<p class="modal__desc">{active.desc}</p>

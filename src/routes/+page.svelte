@@ -6,6 +6,8 @@
 	import Testimonials from "#lib/components/Testimonials.svelte";
 	import Footer from "#lib/components/Footer.svelte";
 
+	let editor = $state(false);
+
 	const DESCRIPTION =
 		"Azhar Danica Budi Zulfalillah is a frontend developer from Purwokerto, Indonesia, building fast, accessible and responsive websites and web apps since 2023.";
 </script>
@@ -19,13 +21,18 @@
 	<meta name="twitter:card" content="summary" />
 </svelte:head>
 
-<Nav />
+<Nav {editor} />
 
 <main>
-	<Hero />
-	<About />
-	<Work />
-	<Testimonials />
+	<Hero bind:editor />
+	<!-- Remount on switch: replays the fade and lets the marquee/scroll re-measure the new text. -->
+	{#key editor}
+		<div class="mode-swap">
+			<About {editor} />
+			<Work {editor} />
+			<Testimonials {editor} />
+		</div>
+	{/key}
 </main>
 
-<Footer />
+<Footer {editor} />
